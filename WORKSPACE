@@ -129,3 +129,35 @@ http_archive(
         "https://github.com/google/ruy/archive/9f53ba413e6fc879236dcaa3e008915973d67a4f.zip",
     ],
 )
+
+# Emscripten
+http_archive(
+   name = "emsdk",
+   strip_prefix = "emsdk-3.1.61/bazel",
+   #sha256 = "8439411fe684a3f59d387b84fc1699c494405d3b5001c48b19ad681fe441bcce",
+   urls =[
+        "https://github.com/emscripten-core/emsdk/archive/3.1.61.tar.gz",
+   ]
+)
+
+load("@emsdk//:deps.bzl", emsdk_deps = "deps")
+emsdk_deps()
+
+load("@emsdk//:emscripten_deps.bzl", emsdk_emscripten_deps = "emscripten_deps")
+emsdk_emscripten_deps(emscripten_version = "3.1.61")
+
+http_archive(
+    name = "rules_android_ndk",
+    sha256 = "f238b4b0323f1e0028a4a3f1093574d70f087867f4b29626469a11eaaf9fd63f",
+    strip_prefix = "rules_android_ndk-1ed5be3498d20c8120417fe73b6a5f2b4a3438cc",
+    url = "https://github.com/bazelbuild/rules_android_ndk/archive/1ed5be3498d20c8120417fe73b6a5f2b4a3438cc.zip",
+)
+
+load("@rules_android_ndk//:rules.bzl", "android_ndk_repository")
+
+# android_ndk_repository(name = "androidndk")
+
+# register_toolchains("@androidndk//:all")
+
+# Android SDK location and API is auto-detected from $ANDROID_HOME environment variable
+# android_sdk_repository(name = "androidsdk")

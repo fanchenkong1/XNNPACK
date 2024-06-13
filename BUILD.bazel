@@ -935,10 +935,7 @@ xnnpack_transitive_source_list(
 
 genrule(
     name = "generate_build_identifier",
-    srcs = [
-        "src/packing.c",
-        ":build_identifier_ukernel_srcs",
-    ],
+    srcs = ["src/packing.c"] + glob(["src/amalgam/**/*.c"]),
     outs = ["src/build_identifier.c"],
     cmd = "$(location generate_build_identifier_py) --output $@ $(SRCS)",
     tools = [":generate_build_identifier_py"],
