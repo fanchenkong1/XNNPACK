@@ -1917,7 +1917,131 @@ static void GEMMEnd2EndBenchmark(
       xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_1x8c16__wasmusdot,
       xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_1x8c16__wasmusdot,
       xnn_init_qs8_qc8w_conv_minmax_fp32_wasmsimd_params,
-      /*mr=*/4, /*nr=*/4, /*log2_kr=*/4, /*log2_sr=*/0,
+      /*mr=*/4, /*nr=*/8, /*log2_kr=*/4, /*log2_sr=*/0,
+      benchmark::utils::CheckWAsmUSDOT);
+  }
+
+  static void qs8_qc8w_gemm_2x4c8__wasmusdot(benchmark::State& state, models::ExecutionPlanFactory model) {
+    GEMMEnd2EndBenchmark(state, model,
+      xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_2x4c8__wasmusdot,
+      xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_2x4c8__wasmusdot,
+      xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_1x4c8__wasmusdot,
+      xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_1x4c8__wasmusdot,
+      xnn_init_qs8_qc8w_conv_minmax_fp32_wasmsimd_params,
+      /*mr=*/2, /*nr=*/4, /*log2_kr=*/3, /*log2_sr=*/0,
+      benchmark::utils::CheckWAsmUSDOT);
+  }
+  static void qs8_qc8w_gemm_3x4c8__wasmusdot(benchmark::State& state, models::ExecutionPlanFactory model) {
+    GEMMEnd2EndBenchmark(state, model,
+      xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_3x4c8__wasmusdot,
+      xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_3x4c8__wasmusdot,
+      xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_1x4c8__wasmusdot,
+      xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_1x4c8__wasmusdot,
+      xnn_init_qs8_qc8w_conv_minmax_fp32_wasmsimd_params,
+      /*mr=*/3, /*nr=*/4, /*log2_kr=*/3, /*log2_sr=*/0,
+      benchmark::utils::CheckWAsmUSDOT);
+  }
+  static void qs8_qc8w_gemm_4x4c8__wasmusdot(benchmark::State& state, models::ExecutionPlanFactory model) {
+    GEMMEnd2EndBenchmark(state, model,
+      xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_4x4c8__wasmusdot,
+      xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_4x4c8__wasmusdot,
+      xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_1x4c8__wasmusdot,
+      xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_1x4c8__wasmusdot,
+      xnn_init_qs8_qc8w_conv_minmax_fp32_wasmsimd_params,
+      /*mr=*/4, /*nr=*/4, /*log2_kr=*/3, /*log2_sr=*/0,
+      benchmark::utils::CheckWAsmUSDOT);
+  }
+
+    static void qs8_qc8w_gemm_2x8c8__wasmusdot(benchmark::State& state, models::ExecutionPlanFactory model) {
+    GEMMEnd2EndBenchmark(state, model,
+      xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_2x8c8__wasmusdot,
+      xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_2x8c8__wasmusdot,
+      xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_1x8c8__wasmusdot,
+      xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_1x8c8__wasmusdot,
+      xnn_init_qs8_qc8w_conv_minmax_fp32_wasmsimd_params,
+      /*mr=*/2, /*nr=*/8, /*log2_kr=*/3, /*log2_sr=*/0,
+      benchmark::utils::CheckWAsmUSDOT);
+  }
+  static void qs8_qc8w_gemm_3x8c8__wasmusdot(benchmark::State& state, models::ExecutionPlanFactory model) {
+    GEMMEnd2EndBenchmark(state, model,
+      xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_3x8c8__wasmusdot,
+      xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_3x8c8__wasmusdot,
+      xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_1x8c8__wasmusdot,
+      xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_1x8c8__wasmusdot,
+      xnn_init_qs8_qc8w_conv_minmax_fp32_wasmsimd_params,
+      /*mr=*/3, /*nr=*/8, /*log2_kr=*/3, /*log2_sr=*/0,
+      benchmark::utils::CheckWAsmUSDOT);
+  }
+  static void qs8_qc8w_gemm_4x8c8__wasmusdot(benchmark::State& state, models::ExecutionPlanFactory model) {
+    GEMMEnd2EndBenchmark(state, model,
+      xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_4x8c8__wasmusdot,
+      xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_4x8c8__wasmusdot,
+      xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_1x8c8__wasmusdot,
+      xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_1x8c8__wasmusdot,
+      xnn_init_qs8_qc8w_conv_minmax_fp32_wasmsimd_params,
+      /*mr=*/4, /*nr=*/8, /*log2_kr=*/3, /*log2_sr=*/0,
+      benchmark::utils::CheckWAsmUSDOT);
+  }
+
+  static void qs8_qc8w_gemm_2x4c8__wasmusdot_u2(benchmark::State& state, models::ExecutionPlanFactory model) {
+    GEMMEnd2EndBenchmark(state, model,
+      xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_2x4c8__wasmusdot_u2,
+      xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_2x4c8__wasmusdot_u2,
+      xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_1x4c8__wasmusdot_u2,
+      xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_1x4c8__wasmusdot_u2,
+      xnn_init_qs8_qc8w_conv_minmax_fp32_wasmsimd_params,
+      /*mr=*/2, /*nr=*/4, /*log2_kr=*/3, /*log2_sr=*/0,
+      benchmark::utils::CheckWAsmUSDOT);
+  }
+  static void qs8_qc8w_gemm_3x4c8__wasmusdot_u2(benchmark::State& state, models::ExecutionPlanFactory model) {
+    GEMMEnd2EndBenchmark(state, model,
+      xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_3x4c8__wasmusdot_u2,
+      xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_3x4c8__wasmusdot_u2,
+      xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_1x4c8__wasmusdot_u2,
+      xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_1x4c8__wasmusdot_u2,
+      xnn_init_qs8_qc8w_conv_minmax_fp32_wasmsimd_params,
+      /*mr=*/3, /*nr=*/4, /*log2_kr=*/3, /*log2_sr=*/0,
+      benchmark::utils::CheckWAsmUSDOT);
+  }
+  static void qs8_qc8w_gemm_4x4c8__wasmusdot_u2(benchmark::State& state, models::ExecutionPlanFactory model) {
+    GEMMEnd2EndBenchmark(state, model,
+      xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_4x4c8__wasmusdot_u2,
+      xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_4x4c8__wasmusdot_u2,
+      xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_1x4c8__wasmusdot_u2,
+      xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_1x4c8__wasmusdot_u2,
+      xnn_init_qs8_qc8w_conv_minmax_fp32_wasmsimd_params,
+      /*mr=*/4, /*nr=*/4, /*log2_kr=*/3, /*log2_sr=*/0,
+      benchmark::utils::CheckWAsmUSDOT);
+  }
+
+    static void qs8_qc8w_gemm_2x8c8__wasmusdot_u2(benchmark::State& state, models::ExecutionPlanFactory model) {
+    GEMMEnd2EndBenchmark(state, model,
+      xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_2x8c8__wasmusdot_u2,
+      xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_2x8c8__wasmusdot_u2,
+      xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_1x8c8__wasmusdot_u2,
+      xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_1x8c8__wasmusdot_u2,
+      xnn_init_qs8_qc8w_conv_minmax_fp32_wasmsimd_params,
+      /*mr=*/2, /*nr=*/8, /*log2_kr=*/3, /*log2_sr=*/0,
+      benchmark::utils::CheckWAsmUSDOT);
+  }
+  static void qs8_qc8w_gemm_3x8c8__wasmusdot_u2(benchmark::State& state, models::ExecutionPlanFactory model) {
+    GEMMEnd2EndBenchmark(state, model,
+      xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_3x8c8__wasmusdot_u2,
+      xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_3x8c8__wasmusdot_u2,
+      xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_1x8c8__wasmusdot_u2,
+      xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_1x8c8__wasmusdot_u2,
+      xnn_init_qs8_qc8w_conv_minmax_fp32_wasmsimd_params,
+      /*mr=*/3, /*nr=*/8, /*log2_kr=*/3, /*log2_sr=*/0,
+      benchmark::utils::CheckWAsmUSDOT);
+  }
+  static void qs8_qc8w_gemm_4x8c8__wasmusdot_u2(benchmark::State& state, models::ExecutionPlanFactory model) {
+    GEMMEnd2EndBenchmark(state, model,
+      xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_4x8c8__wasmusdot_u2,
+      xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_4x8c8__wasmusdot_u2,
+      xnn_qs8_qc8w_gemm_minmax_fp32_ukernel_1x8c8__wasmusdot_u2,
+      xnn_qs8_qc8w_igemm_minmax_fp32_ukernel_1x8c8__wasmusdot_u2,
+      xnn_init_qs8_qc8w_conv_minmax_fp32_wasmsimd_params,
+      /*mr=*/4, /*nr=*/8, /*log2_kr=*/3, /*log2_sr=*/0,
       benchmark::utils::CheckWAsmUSDOT);
   }
 
@@ -1933,6 +2057,20 @@ static void GEMMEnd2EndBenchmark(
   BENCHMARK_QS8_END2END(qs8_qc8w_gemm_2x8c16__wasmusdot)
   BENCHMARK_QS8_END2END(qs8_qc8w_gemm_3x8c16__wasmusdot)
   BENCHMARK_QS8_END2END(qs8_qc8w_gemm_4x8c16__wasmusdot)
+
+  BENCHMARK_QS8_END2END(qs8_qc8w_gemm_2x4c8__wasmusdot)
+  BENCHMARK_QS8_END2END(qs8_qc8w_gemm_3x4c8__wasmusdot)
+  BENCHMARK_QS8_END2END(qs8_qc8w_gemm_4x4c8__wasmusdot)
+  BENCHMARK_QS8_END2END(qs8_qc8w_gemm_2x8c8__wasmusdot)
+  BENCHMARK_QS8_END2END(qs8_qc8w_gemm_3x8c8__wasmusdot)
+  BENCHMARK_QS8_END2END(qs8_qc8w_gemm_4x8c8__wasmusdot)
+
+  BENCHMARK_QS8_END2END(qs8_qc8w_gemm_2x4c8__wasmusdot_u2)
+  BENCHMARK_QS8_END2END(qs8_qc8w_gemm_3x4c8__wasmusdot_u2)
+  BENCHMARK_QS8_END2END(qs8_qc8w_gemm_4x4c8__wasmusdot_u2)
+  BENCHMARK_QS8_END2END(qs8_qc8w_gemm_2x8c8__wasmusdot_u2)
+  BENCHMARK_QS8_END2END(qs8_qc8w_gemm_3x8c8__wasmusdot_u2)
+  BENCHMARK_QS8_END2END(qs8_qc8w_gemm_4x8c8__wasmusdot_u2)
 #endif  // XNN_ARCH_WASMRELAXEDSIMD
 
 
