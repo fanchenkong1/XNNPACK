@@ -82,11 +82,11 @@ void xnn_${DATATYPE_SPEC}_gemm_minmax${REQUANTIZATION_SPEC}_ukernel_${MR}x${NR}c
           v128_t vacc${M}x${ABC[N:N+2]} = wasm_u64x2_extend_low_u32x4(vsum${M}x${ABC[N:N+4]});
           v128_t vacc${M}x${ABC[N+2:N+4]} = wasm_u64x2_extend_high_u32x4(vsum${M}x${ABC[N:N+4]});
     $else:
-      $for N in range(0, NR, 4):
-        v128_t vacc0x${ABC[N:N+4]} = wasm_v128_load(w); w = (const int32_t*) w + 4;
-      $for N in range(0, NR, 4):
+      $for N in range(0, NR, 2):
+        v128_t vacc0x${ABC[N:N+2]} = wasm_u64x2_load32x2(w); w = (const int32_t*) w + 2;
+      $for N in range(0, NR, 2):
         $for M in range(1, MR):
-          v128_t vacc${M}x${ABC[N:N+4]} = vacc0x${ABC[N:N+4]};
+          v128_t vacc${M}x${ABC[N:N+2]} = vacc0x${ABC[N:N+2]};
 
     size_t k = kc;
     while (${"k >= 16 * sizeof(int8_t)" if UNROLL else "k != 0"}) {
@@ -214,6 +214,113 @@ void xnn_${DATATYPE_SPEC}_gemm_minmax${REQUANTIZATION_SPEC}_ukernel_${MR}x${NR}c
           $for M in range(MR):
             wasm_v128_store32_lane(c${M}, vacc${M}x0123, 0);
         }
+        nc = 0;
+      }
+    $else:
+      $if DATATYPE == "QC8":
+        $for N in range(0, NR, 4):
+            const v128_t vscale${ABC[N:N+4]} = wasm_v128_load(w);
+            w = (const float*) w + 4;
+        $for M in range(MR):
+          $for N in range(0, NR, 4):
+            vacc${M}x${ABC[N:N+4]} = wasm_f32x4_mul(vacc${M}x${ABC[N:N+4]}, vscale${ABC[N:N+4]});
+      $else:
+        const v128_t vscale = wasm_v128_load64_splat(params->fp32_wasmsimd.scale);
+        $for M in range(MR):
+          vacc${M}x0123 = wasm_f32x4_mul(vacc${M}x0123, vscale);
+
+      const v128_t vmagic_bias = wasm_v128_load64_splat(params->fp32_wasmsimd.magic_bias);
+      $for M in range(MR):
+        $for N in range(0, NR, 4):
+          vacc${M}x${ABC[N:N+4]} = wasm_f32x4_add(vacc${M}x${ABC[N:N+4]}, vmagic_bias);
+
+      const v128_t vmagic_min = wasm_v128_load64_splat(params->fp32_wasmsimd.magic_min);
+      $for M in range(MR):
+        $for N in range(0, NR, 4):
+          vacc${M}x${ABC[N:N+4]} = wasm_i32x4_max(vacc${M}x${ABC[N:N+4]}, vmagic_min);
+
+      const v128_t vmagic_bias_less_output_zero_point = wasm_v128_load64_splat(params->fp32_wasmsimd.magic_bias_less_output_zero_point);
+      $for M in range(MR):
+        $for N in range(0, NR, 4):
+          vacc${M}x${ABC[N:N+4]} = wasm_i32x4_sub(vacc${M}x${ABC[N:N+4]}, vmagic_bias_less_output_zero_point);
+
+      $if NR == 4:
+        $for M in range(0, MR, 2):
+          v128_t vacc${M}${min(M+1, MR-1)}x0123 = wasm_i16x8_narrow_i32x4(vacc${M}x0123, vacc${min(M+1, MR-1)}x0123);
+      $else:
+        $for M in range(MR):
+          v128_t vacc${M}x01234567 = wasm_i16x8_narrow_i32x4(vacc${M}x0123, vacc${M}x4567);
+
+      $if NR == 4:
+        $if MR > 2:
+          v128_t vacc = wasm_i8x16_narrow_i16x8(vacc0${min(1, MR-1)}x0123, vacc${min(2, MR-1)}${min(3, MR-1)}x0123);
+        $else:
+          v128_t vacc = wasm_i8x16_narrow_i16x8(vacc0${min(1, MR-1)}x0123, vacc0${min(1, MR-1)}x0123);
+      $else:
+        $if MR > 2:
+          v128_t vacc0x01234567_1x01234567 = wasm_i8x16_narrow_i16x8(vacc0x01234567, vacc1x01234567);
+          v128_t vacc2x01234567_${min(3, MR-1)}x01234567 = wasm_i8x16_narrow_i16x8(vacc2x01234567, vacc${min(3, MR-1)}x01234567);
+        $else:
+          v128_t vacc0x01234567_${min(1, MR-1)}x01234567 = wasm_i8x16_narrow_i16x8(vacc0x01234567, vacc${min(1, MR-1)}x01234567);
+
+      const v128_t voutput_max = wasm_v128_load64_splat(params->fp32_wasmsimd.output_max);
+      $if NR == 4:
+        vacc = wasm_i8x16_min(vacc, voutput_max);
+      $else:
+        $if MR > 2:
+          vacc0x01234567_1x01234567 = wasm_i8x16_min(vacc0x01234567_1x01234567, voutput_max);
+          vacc2x01234567_${min(3, MR-1)}x01234567 = wasm_i8x16_min(vacc2x01234567_${min(3, MR-1)}x01234567, voutput_max);
+        $else:
+          vacc0x01234567_${min(1, MR-1)}x01234567 = wasm_i8x16_min(vacc0x01234567_${min(1, MR-1)}x01234567, voutput_max);
+
+      if XNN_LIKELY(nc >= ${NR}) {
+        $if NR == 4:
+          $for M in range(MR):
+            wasm_v128_store32_lane(c${M}, vacc, ${M});
+        $else:
+          $for M in range(MR):
+            wasm_v128_store64_lane(c${M}, vacc${(M>>1)*2}x01234567_${min(MR-1, (M>>1)*2+1)}x01234567, ${M%2});
+
+        $for M in range(MR):
+          c${M} = (int8_t*) ((uintptr_t) c${M} + cn_stride);
+
+        $for M in range(MR):
+          a${M} = (const int8_t*) ((uintptr_t) a${M} - kc);
+
+        nc -= ${NR};
+      } else {
+        $if NR == 8:
+          if (nc & 4) {
+            $for M in range(MR):
+              wasm_v128_store32_lane(c${M}, vacc${(M>>1)*2}x01234567_${min(MR-1, (M>>1)*2+1)}x01234567, ${M%2*2});
+              c${M} += 4;
+
+            $for M in range(0, MR, 2):
+              vacc${(M>>1)*2}x01234567_${min(MR-1, (M>>1)*2+1)}x01234567 = wasm_u64x2_shr(vacc${(M>>1)*2}x01234567_${min(MR-1, (M>>1)*2+1)}x01234567, 32);
+          }
+        if (nc & 2) {
+          $if NR == 4:
+            $for M in range(MR):
+              wasm_v128_store16_lane(c${M}, vacc, ${2 * M});
+              c${M} += 2;
+
+            vacc = wasm_u32x4_shr(vacc, 16);
+          $else:
+            $for M in range(MR):
+              wasm_v128_store16_lane(c${M}, vacc${(M>>1)*2}x01234567_${min(MR-1, (M>>1)*2+1)}x01234567, ${M%2*4});
+              c${M} += 2;
+
+            $for M in range(0, MR, 2):
+              vacc${(M>>1)*2}x01234567_${min(MR-1, (M>>1)*2+1)}x01234567 = wasm_u32x4_shr(vacc${(M>>1)*2}x01234567_${min(MR-1, (M>>1)*2+1)}x01234567, 16);
+        }
+        if (nc & 1) {
+          $for M in range(MR):
+            $if NR == 4:
+              wasm_v128_store8_lane(c${M}, vacc, ${4 * M});
+            $else:
+              wasm_v128_store8_lane(c${M}, vacc${(M>>1)*2}x01234567_${min(MR-1, (M>>1)*2+1)}x01234567, ${M%2*8});
+        }
+
         nc = 0;
       }
   } while (nc != 0);
